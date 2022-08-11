@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoFixture" Version="4.17.0" />
+    <PackageReference Include="AutoFixture.AutoMoq" Version="4.17.0" />
+    <PackageReference Include="AutoFixture.Idioms" Version="4.17.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AutoTeam.Domain\AutoTeam.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
