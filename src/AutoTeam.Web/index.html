@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoTeam – Student Group Maker</title>
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #f0f4f8;
+    color: #1e293b;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, #4338ca, #0d9488);
+    color: #fff;
+    padding: 1.5rem 2rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  }
+  header h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.5px; }
+  header p  { font-size: 0.95rem; opacity: 0.85; margin-top: 0.25rem; }
+
+  /* ── Layout ── */
+  .container { max-width: 960px; margin: 0 auto; padding: 1.5rem 1rem; }
+
+  /* ── Cards ── */
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .card h2 {
+    font-size: 1.15rem;
+    color: #4338ca;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .card h2 .step {
+    background: #4338ca;
+    color: #fff;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* ── Form Elements ── */
+  label { display: block; font-weight: 600; margin-bottom: 0.35rem; font-size: 0.9rem; }
+  textarea, input[type="number"] {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.2s;
+  }
+  textarea:focus, input[type="number"]:focus {
+    outline: none;
+    border-color: #4338ca;
+    box-shadow: 0 0 0 3px rgba(67,56,202,.12);
+  }
+  textarea { resize: vertical; min-height: 120px; }
+  input[type="number"] { width: 80px; }
+
+  .hint { font-size: 0.82rem; color: #64748b; margin-top: 0.25rem; }
+
+  .form-row { display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end; margin-bottom: 1rem; }
+  .form-row > div { flex: 1; min-width: 120px; }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1.4rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-primary { background: #4338ca; color: #fff; }
+  .btn-primary:hover:not(:disabled) { background: #3730a3; }
+
+  .btn-teal { background: #0d9488; color: #fff; }
+  .btn-teal:hover:not(:disabled) { background: #0f766e; }
+
+  .btn-amber { background: #d97706; color: #fff; }
+  .btn-amber:hover:not(:disabled) { background: #b45309; }
+
+  .btn-group { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+
+  /* ── Groups Grid ── */
+  .groups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .group-card {
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1rem;
+    transition: border-color 0.2s;
+  }
+  .group-card:hover { border-color: #4338ca; }
+  .group-card h3 {
+    font-size: 0.95rem;
+    color: #334155;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  .member {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0;
+    font-size: 0.9rem;
+  }
+  .badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+  .badge-male   { background: #dbeafe; color: #1e40af; }
+  .badge-female { background: #fce7f3; color: #9d174d; }
+
+  .empty-members {
+    color: #94a3b8;
+    font-style: italic;
+    font-size: 0.88rem;
+    padding: 0.5rem 0;
+  }
+
+  /* ── Round Badge ── */
+  .round-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: linear-gradient(135deg, #4338ca, #0d9488);
+    color: #fff;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  /* ── Messages ── */
+  .msg {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-top: 0.75rem;
+  }
+  .msg-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+  .msg-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+  .msg-info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+
+  .hidden { display: none !important; }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.35rem; }
+    .container { padding: 1rem 0.5rem; }
+    .card { padding: 1rem; }
+    .groups-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>AutoTeam</h1>
+  <p>Create smart, fair student groups in seconds</p>
+</header>
+
+<div class="container">
+
+  <!-- ── Step 1: Setup ── -->
+  <div class="card" id="setup-card">
+    <h2><span class="step">1</span> Classroom Setup</h2>
+
+    <label for="students-input">Students <small>(one per line: <code>Name,Male</code> or <code>Name,Female</code>)</small></label>
+    <textarea id="students-input" placeholder="Alice,Female
+Bob,Male
+Charlie,Male
+Diana,Female"></textarea>
+    <p class="hint">Tip: you can paste a list from a spreadsheet. Default classification is Female if omitted.</p>
+
+    <div style="margin-top:1.25rem">
+      <label for="num-groups">Number of Groups</label>
+      <input type="number" id="num-groups" value="2" min="1" max="50" style="width:100px">
+    </div>
+
+    <div style="margin-top:1rem">
+      <label>Capacity per Group</label>
+      <div class="form-row">
+        <div>
+          <label for="male-cap" style="font-weight:400;font-size:0.85rem">Males per group</label>
+          <input type="number" id="male-cap" value="2" min="0" max="50">
+        </div>
+        <div>
+          <label for="female-cap" style="font-weight:400;font-size:0.85rem">Females per group</label>
+          <input type="number" id="female-cap" value="2" min="0" max="50">
+        </div>
+      </div>
+      <p class="hint">These capacities apply to every group (uniform setup).</p>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" id="btn-create" onclick="createClassroom()">Create Classroom</button>
+    </div>
+    <div id="setup-msg"></div>
+  </div>
+
+  <!-- ── Step 2: Assign & View ── -->
+  <div class="card hidden" id="assign-card">
+    <h2><span class="step">2</span> Assign &amp; View Groups</h2>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
+      <span class="round-badge" id="round-badge">Round 1</span>
+      <div class="btn-group" style="margin-top:0">
+        <button class="btn btn-teal" id="btn-assign" onclick="assignStudents()">Assign Students</button>
+        <button class="btn btn-amber" id="btn-accept" onclick="acceptGroups()" disabled>Accept &amp; Next Round</button>
+      </div>
+    </div>
+
+    <div id="assign-msg"></div>
+    <div id="groups-container" class="groups-grid"></div>
+    <div id="empty-state" class="msg msg-info" style="margin-top:1rem;">
+      Click <strong>Assign Students</strong> to generate groups for this round.
+    </div>
+  </div>
+
+  <!-- ── New Setup ── -->
+  <div class="hidden" id="reset-section" style="text-align:center;margin-top:0.5rem;">
+    <button class="btn btn-primary" onclick="resetApp()" style="background:#64748b;">Start Over (New Classroom)</button>
+  </div>
+</div>
+
+<script>
+// ── Configuration ──
+const API_BASE = 'http://localhost:5000';
+
+let sessionId = null;
+let currentRound = 1;
+
+// ── Helpers ──
+function $(id) { return document.getElementById(id); }
+
+function showMsg(el, text, type) {
+  el.innerHTML = `<div class="msg msg-${type}">${text}</div>`;
+}
+
+function clearMsg(el) { el.innerHTML = ''; }
+
+// ── Step 1: Create Classroom ──
+async function createClassroom() {
+  const btn = $('btn-create');
+  const msgEl = $('setup-msg');
+  clearMsg(msgEl);
+
+  const raw = $('students-input').value.trim();
+  if (!raw) { showMsg(msgEl, 'Please enter at least one student.', 'error'); return; }
+
+  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  const students = [];
+  for (const line of lines) {
+    const parts = line.split(',').map(p => p.trim());
+    const name = parts[0];
+    const classification = (parts[1] || 'Female');
+    if (!name) continue;
+    if (!['Male','Female'].includes(classification)) {
+      showMsg(msgEl, `Invalid classification "${classification}" for "${name}". Use Male or Female.`, 'error');
+      return;
+    }
+    students.push({ name, classification });
+  }
+
+  if (students.length === 0) { showMsg(msgEl, 'No valid students found.', 'error'); return; }
+
+  const numGroups = parseInt($('num-groups').value) || 2;
+  const maleCap  = parseInt($('male-cap').value)  || 0;
+  const femaleCap = parseInt($('female-cap').value) || 0;
+
+  if (maleCap === 0 && femaleCap === 0) {
+    showMsg(msgEl, 'Groups need at least some capacity (male or female).', 'error');
+    return;
+  }
+
+  const groups = [];
+  for (let i = 0; i < numGroups; i++) {
+    groups.push({ maleCapacity: maleCap, femaleCapacity: femaleCap });
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Creating…';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/classroom/setup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ students, groups })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Setup failed');
+
+    sessionId = data.sessionId;
+    currentRound = 1;
+
+    // Transition UI
+    $('setup-card').classList.add('hidden');
+    $('assign-card').classList.remove('hidden');
+    $('reset-section').classList.remove('hidden');
+    updateRoundBadge();
+    renderEmptyState();
+  } catch (err) {
+    showMsg(msgEl, err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Create Classroom';
+  }
+}
+
+// ── Step 2: Assign ──
+async function assignStudents() {
+  const btn = $('btn-assign');
+  const msgEl = $('assign-msg');
+  clearMsg(msgEl);
+  btn.disabled = true;
+  btn.textContent = 'Assigning…';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/classroom/${sessionId}/assign`, { method: 'POST' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Assign failed');
+
+    renderGroups(data.groups);
+    $('btn-accept').disabled = false;
+    $('empty-state').classList.add('hidden');
+    showMsg(msgEl, 'Students assigned successfully!', 'success');
+  } catch (err) {
+    showMsg(msgEl, err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Assign Students';
+  }
+}
+
+// ── Accept Groups ──
+async function acceptGroups() {
+  const btn = $('btn-accept');
+  const msgEl = $('assign-msg');
+  clearMsg(msgEl);
+  btn.disabled = true;
+  btn.textContent = 'Accepting…';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/classroom/${sessionId}/accept`, { method: 'POST' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Accept failed');
+
+    currentRound++;
+    updateRoundBadge();
+    renderEmptyState();
+    showMsg(msgEl, `${data.message} Click Assign Students to generate new groups.`, 'success');
+  } catch (err) {
+    showMsg(msgEl, err.message, 'error');
+  } finally {
+    btn.textContent = 'Accept & Next Round';
+    // Keep accept disabled until next assign
+  }
+}
+
+// ── Rendering ──
+function renderGroups(groups) {
+  const container = $('groups-container');
+  container.innerHTML = '';
+
+  groups.forEach(g => {
+    const card = document.createElement('div');
+    card.className = 'group-card';
+
+    let membersHtml = '';
+    if (g.members.length === 0) {
+      membersHtml = '<p class="empty-members">No members assigned</p>';
+    } else {
+      membersHtml = g.members.map(m => {
+        const badgeClass = m.classification === 'Male' ? 'badge-male' : 'badge-female';
+        return `<div class="member">
+          <span class="badge ${badgeClass}">${m.classification}</span>
+          <span>${escHtml(m.name)}</span>
+        </div>`;
+      }).join('');
+    }
+
+    card.innerHTML = `
+      <h3>Group ${g.groupIndex + 1}</h3>
+      ${membersHtml}
+    `;
+    container.appendChild(card);
+  });
+}
+
+function renderEmptyState() {
+  $('groups-container').innerHTML = '';
+  $('empty-state').classList.remove('hidden');
+  $('btn-accept').disabled = true;
+}
+
+function updateRoundBadge() {
+  $('round-badge').textContent = `Round ${currentRound}`;
+}
+
+function resetApp() {
+  sessionId = null;
+  currentRound = 1;
+  $('setup-card').classList.remove('hidden');
+  $('assign-card').classList.add('hidden');
+  $('reset-section').classList.add('hidden');
+  clearMsg($('setup-msg'));
+  clearMsg($('assign-msg'));
+  $('groups-container').innerHTML = '';
+}
+
+function escHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+</script>
+
+</body>
+</html>
